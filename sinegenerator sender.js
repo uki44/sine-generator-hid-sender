@@ -3,12 +3,38 @@ var parametri = [41.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.
 var vrh = 0;
 var buffer = new Uint8Array(64);
 var buffer2 = new Uint8Array(64);
-buffer[0] = 0x80;
+var vrh1 = 0, vrh2 = 0;
+
+
+/*buffer[0] = 0x80;
 buffer[1] = 0x1;
 buffer2[0] = 0x80;
 buffer2[1] = 0x2;
-//const device = new hid.HID('/dev/hidraw3');
-const device = new hid.HID(1156, 22353); //vid,pid
+*/
+
+function buffer1Push(val){
+    
+    buffer[vrh1] = val;
+    vrh1++;
+    
+}
+
+function buffer2Push(val){
+    
+    
+    buffer2[vrh2] =val; 
+    vrh2++;
+    
+}
+
+buffer1Push(0x80);
+buffer1Push(0x01);
+buffer2Push(0x80);
+buffer2Push(0x02);
+
+
+const device = new hid.HID('/dev/hidraw3');
+//const device = new hid.HID(1156, 22353); //vid,pid
 function send1() {
     const toSend = new Buffer(buffer.buffer)
     const bytes = device.write(Array.from(toSend))
@@ -18,8 +44,8 @@ function send1() {
     });
 }
 function send2() {
-    const toSend = new Buffer(buffer2.buffer)
-    const bytes = device.write(Array.from(toSend))
+    const toSend1 = new Buffer(buffer2.buffer)
+    const bytes = device.write(Array.from(toSend1))
     console.log(buffer2)
     var tst = device.on("data", function (data) {
         console.log(data.toString('hex'));
@@ -38,7 +64,7 @@ function floatSlice(dataArr, index) {
     return tempBuff;
 }
 
-function writeFloatToBuff(dataArr, buffArr, numberSet) {
+function writeFloatToBuff(dataArr, buffArrNum, numberSet) {
     var i,j;
     numberSet *= 3;
     var tempFloatArr;
@@ -49,33 +75,52 @@ for( j = 0;j < 2; j++){
 
 
     for (i = 0; i < 4; i++) {
-
-        buffArr.push(tempFloatArr[i]);
-
+    if(buffArrNum == 1){
+     
+        buffer1Push( tempFloatArr[i]);
+        
+    }
+    if(buffArrNum == 2){
+     
+        buffer2Push( tempFloatArr[i]);
+        
+    }
     }
 }
 }
 
-function writeIntToBuff(dataArr,buffArr,numberSet){
+function writeIntToBuff(dataArr,buffArrNum,numberSet){
 
-    buffArr.push(dataArr[numberSet+2]);
+
+    if(buffArrNum == 1){
+     
+        buffer1Push( dataArr[numberSet+2]);
+        
+    }
+    if(buffArrNum == 2){
+     
+        buffer2Push( dataArr[numberSet+2]);
+        
+    }
+    
 
 }
 
 for(k = 0; k < 5;k++){
 
-writeFloatToBuff(parametri,buffer,k);
-writeIntToBuff(parametri,buffer,k);
+writeFloatToBuff(parametri,1,k);
+writeIntToBuff(parametri,1,k);
 
 }
 for(n = 5; n < 10;n++){
     
-writeFloatToBuff(parametri,buffer,n);
-writeIntToBuff(parametri,buffer2,n);
+writeFloatToBuff(parametri,2,n);
+writeIntToBuff(parametri,2,n);
 }
 
 send1();
 send2();
+//setTimeout(function(){send2();},1000);
 
 
 
