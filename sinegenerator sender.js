@@ -1,5 +1,5 @@
 var hid = require('node-hid')
-var parametri = [41.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 72.5, 3.1, 32, 82.5, 3.3, 30];
+var parametri = [41.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 72.5, 3.1, 30, 82.5, 3.3, 30];
 var vrh = 0;
 var buffer = new Uint8Array(64);
 var buffer2 = new Uint8Array(64);
@@ -33,23 +33,23 @@ buffer2Push(0x80);
 buffer2Push(0x02);
 
 
-const device = new hid.HID('/dev/hidraw3');
-//const device = new hid.HID(1156, 22353); //vid,pid
+//const device = new hid.HID('/dev/hidraw3');
+const device = new hid.HID(1156, 22353); //vid,pid
 function send1() {
     const toSend = new Buffer(buffer.buffer)
     const bytes = device.write(Array.from(toSend))
     console.log(buffer)
-    var tst = device.on("data", function (data) {
+   /* var tst = device.on("data", function (data) {
         console.log(data.toString('hex'));
-    });
+    });*/
 }
 function send2() {
     const toSend1 = new Buffer(buffer2.buffer)
     const bytes = device.write(Array.from(toSend1))
     console.log(buffer2)
-    var tst = device.on("data", function (data) {
+   /* var tst = device.on("data", function (data) {
         console.log(data.toString('hex'));
-    });
+    });*/
 }
 
 function floatSlice(dataArr, index) {
@@ -69,6 +69,7 @@ function writeFloatToBuff(dataArr, buffArrNum, numberSet) {
     numberSet *= 3;
     var tempFloatArr;
 for( j = 0;j < 2; j++){
+
     tempFloatArr = floatSlice(dataArr, numberSet + j);
 
 
@@ -94,12 +95,12 @@ function writeIntToBuff(dataArr,buffArrNum,numberSet){
 
     if(buffArrNum == 1){
      
-        buffer1Push( dataArr[numberSet+2]);
+        buffer1Push( dataArr[(3*numberSet)+2]);
         
     }
     if(buffArrNum == 2){
      
-        buffer2Push( dataArr[numberSet+2]);
+        buffer2Push( dataArr[(3*numberSet)+2]);
         
     }
     
@@ -119,8 +120,8 @@ writeIntToBuff(parametri,2,n);
 }
 
 send1();
-send2();
-//setTimeout(function(){send2();},1000);
+//send2();
+setTimeout(function(){send2();},100);
 
 
 
