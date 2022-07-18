@@ -1,5 +1,6 @@
 var hid = require('node-hid')
-var parametri = [41.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 72.5, 3.1, 30, 82.5, 3.3, 30];
+
+var parametri = [41.5, 3.3, 3, 62.5, 3.3, 4, 62.5, 3.3, 5, 62.5, 3.3, 4, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 62.5, 3.3, 30, 72.5, 3.1, 30, 82.5, 3.3, 30];
 var vrh = 0;
 var buffer = new Uint8Array(64);
 var buffer2 = new Uint8Array(64);
@@ -100,7 +101,7 @@ function writeIntToBuff(dataArr,buffArrNum,numberSet){
     }
     if(buffArrNum == 2){
      
-        buffer2Push( dataArr[(3*numberSet)+2]);
+        buffer2Push( dataArr[(3*numberSet)+2]); //bug here
         
     }
     
@@ -121,6 +122,7 @@ writeIntToBuff(parametri,2,n);
 
 send1();
 //send2();
+buffer2[62] = 1;
 setTimeout(function(){send2();},100);
 
 
